@@ -1,64 +1,65 @@
-# 超级九宫格游戏
+# 超级九宫格游戏 (Super Tic Tac Toe)
 
-一个基于 HTML、CSS 和 JavaScript 的超级九宫格游戏，支持双人对战。
+基于 HTML5、CSS3 和 JavaScript 开发的双人对战策略游戏。
 
 ## 游戏特色
 
-- 🎮 **双版本支持**：基础版和进阶版
-- 🎯 **策略性强**：九宫格嵌套，需要考虑全局策略
-- 📱 **响应式设计**：支持手机和平板设备
-- 🎨 **精美UI**：现代化界面设计
+- **双版本支持**：基础版与进阶版两种规则模式
+- **九宫格嵌套**：9 个小九宫格决定大九宫格的落子位置
+- **响应式设计**：适配手机、平板和桌面端设备
+- **极简部署**：纯前端实现，无需后端或数据库
 
-## 部署指南
+## 快速开始
 
-### Vercel 部署
-
-1. **推送代码到 GitHub**
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git branch -M main
-   git remote add origin https://github.com/your-username/super-tic-tac-toe.git
-   git push -u origin main
-   ```
-
-2. **部署到 Vercel**
-   - 将代码推送到 GitHub 后，访问 [Vercel](https://vercel.com)
-   - 点击 "New Project"
-   - 选择你的 GitHub 仓库
-   - 点击 "Deploy"
-
-3. **自定义域名（可选）**
-   - 在 Vercel 仪表板中配置你的自定义域名
-
-### 本地开发
+直接用浏览器打开即可运行：
 
 ```bash
-# 安装 Vercel CLI
-npm install -g vercel
+# 方式一：双击文件打开
+supertictactoe.html
 
-# 本地运行
-vercel dev
+# 方式二：命令行启动
+start supertictactoe.html  # Windows
+open supertictactoe.html   # macOS
 ```
 
 ## 游戏规则
 
-### 基础规则版
-- 传统规则，策略明确
-- 九宫格被占领后不能落子
+### 通用规则
+
+- 游戏目标：在胜负九宫格中先连成三子（横、竖、斜）的玩家获胜
+- 游戏布局：9 个普通九宫格 + 1 个胜负九宫格
+- 玩家轮流落子（X 先手）
+- 落子位置决定对方下一个落子的九宫格：(row, col) → 对方必须在 (row×3+col) 号九宫格落子
+- 若指定九宫格已满或不可用，可任意选择其他九宫格
+
+### 基础版
+
+- 普通九宫格被占领后，不能再在该九宫格中落子
+- 策略更直接，节奏更快
 - 适合新手玩家
 
-### 进阶规则版  
-- 九宫格被占领后仍可落子
-- 更多策略可能性
-- 适合高手玩家
+### 进阶版
+
+- 普通九宫格被占领后，仍可在空位上继续落子
+- 策略可能性更多，游戏更持久
+- 适合喜欢深度策略的玩家
+
+## 项目结构
+
+```
+SuperTicTacToe/
+├── supertictactoe.html    # 游戏主界面（完整实现）
+├── .gitignore             # Git 忽略规则
+└── README.md              # 项目说明文档
+```
 
 ## 技术栈
 
-- **前端**：HTML5, CSS3, JavaScript (ES6+)
-- **部署**：Vercel
-- **数据库**：无（纯前端实现）
+| 技术 | 用途 |
+|------|------|
+| HTML5 | 页面结构 |
+| CSS3 | 样式与响应式布局 |
+| JavaScript ES6+ | 游戏逻辑与交互 |
 
 ## 浏览器兼容性
 
@@ -67,6 +68,9 @@ vercel dev
 - Safari 12+
 - Edge 79+
 
-## 许可证
+## 版权信息
 
-MIT License
+软件名称：超级九宫格游戏 (Super Tic Tac Toe)
+版本号：1.0.0
+开发者：BullyDoss
+版权所有 (C) 2026 BullyDoss
