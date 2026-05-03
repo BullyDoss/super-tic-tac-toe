@@ -1,0 +1,1 @@
+{"name":"super-tic-tac-toe","version":"1.0.0","description":"超级九宫格游戏 - 在线对战版","scripts":{"dev":"python -m http.server 8000","build":"echo 'No build step needed for static frontend'","start":"python -m http.server 8000"},"dependencies":{"@supabase/supabase-js":"^2.39.0","uuid":"^9.0.0"}}

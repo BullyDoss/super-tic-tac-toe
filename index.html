@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>超级九宫格游戏 - 双版本</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* 游戏健康忠告 */
+        .health-warning {
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #856404;
+            font-size: 1rem;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .warning-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #d35400;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .warning-content {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .warning-text {
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* 标题样式 */
+        .title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #0066cc;
+        }
+
+        .title h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #666;
+        }
+
+        /* 版本选择 */
+        .version-selector {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 30px auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .version-title {
+            font-size: 1.8rem;
+            color: #0066cc;
+            margin-bottom: 20px;
+        }
+
+        .version-options {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .version-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            width: 250px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .version-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .version-card.selected {
+            border-color: #4caf50;
+            background-color: #e8f5e9;
+        }
+
+        .version-card.basic {
+            border-color: #2196f3;
+        }
+
+        .version-card.advanced {
+            border-color: #ff9800;
+        }
+
+        .version-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .version-name.basic {
+            color: #2196f3;
+        }
+
+        .version-name.advanced {
+            color: #ff9800;
+        }
+
+        .version-desc {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .version-features {
+            text-align: left;
+            font-size: 0.85rem;
+            color: #555;
+        }
+
+        .version-features li {
+            margin-bottom: 5px;
+            padding-left: 5px;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background-color: #4caf50;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+
+        /* 游戏状态栏 */
+        .game-status {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .status-playing {
+            color: #0066cc;
+        }
+
+        .status-x-win {
+            color: #ff4444;
+        }
+
+        .status-o-win {
+            color: #4444ff;
+        }
+
+        .status-draw {
+            color: #666;
+        }
+
+        /* 胜负九宫格 */
+        .win-board-container {
+            background-color: #e8f5e9;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .win-board-title {
+            font-size: 1.5rem;
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .win-board {
+            display: inline-block;
+            background-color: #c8e6c9;
+            border: 3px solid #2e7d32;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .win-board-row {
+            display: flex;
+        }
+
+        .win-cell {
+            width: 80px;
+            height: 80px;
+            border: 2px solid #2e7d32;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .win-cell-x {
+            background-color: #ffebee;
+            color: #d32f2f;
+        }
+
+        .win-cell-o {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+
+        /* 普通九宫格容器 */
+        .boards-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .board-wrapper {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .board-wrapper.active {
+            background-color: #fffde7;
+            box-shadow: 0 0 15px rgba(255, 235, 59, 0.5);
+        }
+
+        .board-title {
+            font-size: 1.2rem;
+            color: #0066cc;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .board-winner-overlay {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .board-winner-x {
+            background-color: #ff4444;
+        }
+
+        .board-winner-o {
+            background-color: #4444ff;
+        }
+
+        .board {
+            display: inline-block;
+            background-color: white;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .board-row {
+            display: flex;
+        }
+
+        .cell {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cell:hover {
+            background-color: #f5f5f5;
+        }
+
+        .cell.x {
+            color: #ff4444;
+            font-weight: bold;
+        }
+
+        .cell.o {
+            color: #4444ff;
+            font-weight: bold;
+        }
+
+        .cell.disabled {
+            cursor: not-allowed;
+            background-color: #f5f5f5;
+        }
+
+        /* 按钮样式 */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #4a6fa5;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a5a8a;
+        }
+
+        .btn-secondary {
+            background-color: #666;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #555;
+        }
+
+        .btn-success {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #3d8b40;
+        }
+
+        .btn-warning {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #e68900;
+        }
+
+        /* 菜单样式 */
+        .menu {
+            text-align: center;
+            padding: 40px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 50px auto;
+        }
+
+        .menu-title {
+            font-size: 2.5rem;
+            color: #0066cc;
+            margin-bottom: 20px;
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .menu-btn {
+            padding: 15px;
+            font-size: 1.2rem;
+        }
+
+        /* 规则样式 */
+        .rules {
+            max-width: 800px;
+            margin: 30px auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .rules h2 {
+            color: #0066cc;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .rules-section {
+            margin-bottom: 25px;
+        }
+
+        .rules-section h3 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #e8f5e9;
+            padding-bottom: 5px;
+        }
+
+        .rules-list {
+            padding-left: 20px;
+        }
+
+        .rules-list li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .version-rule {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .version-rule.basic {
+            background-color: #e3f2fd;
+            border-left-color: #2196f3;
+        }
+
+        .version-rule.advanced {
+            background-color: #fff3e0;
+            border-left-color: #ff9800;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .title h1 {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .version-options {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .boards-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .win-cell {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+            
+            .cell {
+                width: 25px;
+                height: 25px;
+                font-size: 0.9rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 200px;
+            }
+            
+            .health-warning {
+                padding: 12px 15px;
+            }
+            
+            .warning-title {
+                font-size: 1.1rem;
+            }
+            
+            .warning-text {
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .boards-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .win-cell {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+            
+            .cell {
+                width: 20px;
+                height: 20px;
+                font-size: 0.8rem;
+            }
+            
+            .warning-title {
+                font-size: 1rem;
+            }
+            
+            .warning-text {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* 游戏结束弹窗 */
+        .game-over-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .game-over-content {
+            background-color: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-over-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .game-over-message {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* 游戏信息面板 */
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .player-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .player-icon-x {
+            background-color: #ff4444;
+        }
+
+        .player-icon-o {
+            background-color: #4444ff;
+        }
+
+        .current-player {
+            font-weight: bold;
+            color: #0066cc;
+        }
+
+        .next-board-info {
+            font-style: italic;
+            color: #666;
+        }
+
+        .version-indicator {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .version-indicator.basic {
+            background-color: #2196f3;
+            color: white;
+        }
+
+        .version-indicator.advanced {
+            background-color: #ff9800;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- 游戏健康忠告 -->
+    <div class="health-warning">
+        <div class="warning-title">游戏健康忠告</div>
+        <div class="warning-content">
+            <div class="warning-text">适度游戏益脑，沉迷游戏伤身</div>
+            <div class="warning-text">合理安排时间，享受健康生活</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 主菜单 -->
+        <div id="mainMenu" class="menu">
+            <h1 class="menu-title">超级九宫格游戏</h1>
+            
+            <div class="menu-buttons">
+                <button id="startGameBtn" class="btn btn-primary menu-btn">开始游戏</button>
+                <button id="rulesBtn" class="btn btn-secondary menu-btn">游戏规则</button>
+                <button id="exitBtn" class="btn btn-secondary menu-btn">退出游戏</button>
+            </div>
+        </div>
+
+        <!-- 版本选择 -->
+        <div id="versionSelector" class="version-selector hidden">
+            <h2 class="version-title">选择游戏版本</h2>
+            <p>请选择您想要游玩的游戏版本：</p>
+            
+            <div class="version-options">
+                <div id="basicVersionCard" class="version-card basic" data-version="basic">
+                    <div class="version-badge">基础版</div>
+                    <div class="version-name basic">基础规则版</div>
+                    <p class="version-desc">传统规则，策略明确</p>
+                    <ul class="version-features">
+                        <li>✓ 简单易懂</li>
+                        <li>✓ 策略直接</li>
+                        <li>✓ 适合新手</li>
+                        <li>✗ 占领后不能落子</li>
+                    </ul>
+                </div>
+                
+                <div id="advancedVersionCard" class="version-card advanced" data-version="advanced">
+                    <div class="version-badge">进阶版</div>
+                    <div class="version-name advanced">自由落子版</div>
+                    <p class="version-desc">更多可能性，更高策略性</p>
+                    <ul class="version-features">
+                        <li>✓ 策略更丰富</li>
+                        <li>✓ 游戏更持久</li>
+                        <li>✓ 适合高手</li>
+                        <li>✓ 占领后仍可落子</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button id="confirmVersionBtn" class="btn btn-success">确认选择</button>
+                <button id="backToMainBtn" class="btn btn-secondary">返回主菜单</button>
+            </div>
+        </div>
+
+        <!-- 游戏规则 -->
+        <div id="rulesScreen" class="rules hidden">
+            <h2>游戏规则说明</h2>
+            
+            <div class="rules-section">
+                <h3>【通用规则】</h3>
+                <ul class="rules-list">
+                    <li>游戏目标：在胜负九宫格中先连成三子（横、竖、斜）的玩家获胜</li>
+                    <li>游戏布局：有9个普通九宫格和1个胜负九宫格</li>
+                    <li>每个普通九宫格对应胜负九宫格的一个位置</li>
+                    <li>玩家轮流在普通九宫格中落子（X先手）</li>
+                    <li>在一个普通九宫格中连成三子，则该九宫格归该玩家所有</li>
+                    <li>胜负九宫格的对应位置会标记胜者（只标记一次）</li>
+                    <li>落子位置决定对方的下一个落子位置：在位置(row,col)落子 → 对方必须在(row*3+col)号九宫格落子</li>
+                    <li>若指定九宫格已满，可任意选择其他九宫格落子</li>
+                </ul>
+            </div>
+            
+            <div class="rules-section">
+                <h3>【版本差异】</h3>
+                
+                <div class="version-rule basic">
+                    <strong>基础版规则：</strong>
+                    <ul class="rules-list">
+                        <li>普通九宫格有胜者后，不能再在该九宫格中落子</li>
+                        <li>策略更直接，游戏节奏更快</li>
+                        <li>适合新手玩家和快速游戏</li>
+                    </ul>
+                </div>
+                
+                <div class="version-rule advanced">
+                    <strong>进阶版规则：</strong>
+                    <ul class="rules-list">
+                        <li><strong>普通九宫格有胜者后，仍然可以在该九宫格的空位上落子</strong></li>
+                        <li>这为游戏带来了更多策略可能性</li>
+                        <li>游戏时间可能更长，策略更复杂</li>
+                        <li>适合喜欢深度策略的玩家</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="rules-section">
+                <h3>【游戏结束】</h3>
+                <ul class="rules-list">
+                    <li>胜负九宫格先连成三子的玩家获胜</li>
+                    <li>所有九宫格已满且无胜者 → 平局</li>
+                </ul>
+            </div>
+            
+            <div class="controls">
+                <button id="backToMenuBtn" class="btn btn-primary">返回菜单</button>
+            </div>
+        </div>
+
+        <!-- 游戏界面 -->
+        <div id="gameScreen" class="hidden">
+            <div class="title">
+                <h1>超级九宫格游戏
+                    <span id="versionIndicator" class="version-indicator"></span>
+                </h1>
+                <p class="subtitle" id="gameSubtitle">胜负九宫格连成三子即可获胜</p>
+            </div>
+
+            <!-- 游戏信息 -->
+            <div id="gameInfo" class="game-info">
+                <div id="playerXInfo" class="player-info">
+                    <div class="player-icon player-icon-x">X</div>
+                    <span>玩家 X</span>
+                </div>
+                
+                <div id="gameStatus" class="game-status status-playing">
+                    玩家 X 的回合 - 可选择任意九宫格
+                </div>
+                
+                <div id="playerOInfo" class="player-info">
+                    <div class="player-icon player-icon-o">O</div>
+                    <span>玩家 O</span>
+                </div>
+            </div>
+
+            <!-- 胜负九宫格 -->
+            <div class="win-board-container">
+                <div class="win-board-title">胜负九宫格</div>
+                <div id="winBoard" class="win-board">
+                    <!-- 胜负九宫格将通过JS动态生成 -->
+                </div>
+            </div>
+
+            <!-- 普通九宫格 -->
+            <div id="boardsContainer" class="boards-container">
+                <!-- 9个普通九宫格将通过JS动态生成 -->
+            </div>
+
+            <!-- 控制按钮 -->
+            <div class="controls">
+                <button id="restartGameBtn" class="btn btn-success">重新开始</button>
+                <button id="changeVersionBtn" class="btn btn-warning">切换版本</button>
+                <button id="returnToMenuBtn" class="btn btn-secondary">返回菜单</button>
+            </div>
+        </div>
+
+        <!-- 游戏结束弹窗 -->
+        <div id="gameOverModal" class="game-over-modal hidden">
+            <div class="game-over-content">
+                <h2 class="game-over-title">游戏结束</h2>
+                <div id="gameOverMessage" class="game-over-message"></div>
+                <div class="controls">
+                    <button id="playAgainBtn" class="btn btn-primary">再玩一次</button>
+                    <button id="changeVersionAfterGameBtn" class="btn btn-warning">切换版本</button>
+                    <button id="returnToMenuFromModalBtn" class="btn btn-secondary">返回菜单</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 游戏状态常量
+        const MAIN_MENU = 'MAIN_MENU';
+        const VERSION_SELECT = 'VERSION_SELECT';
+        const PLAYING = 'PLAYING';
+        const X_WON = 'X_WON';
+        const O_WON = 'O_WON';
+        const DRAW = 'DRAW';
+        const SHOW_RULES = 'SHOW_RULES';
+
+        // 游戏版本常量
+        const VERSION_BASIC = 'basic';    // 基础版：占领后不能落子
+        const VERSION_ADVANCED = 'advanced'; // 进阶版：占领后仍可落子
+
+        // 游戏主类
+        class UltimateTicTacToe {
+            constructor() {
+                this.boards = [];
+                this.winBoard = [];
+                this.currentPlayer = 'X';
+                this.gameState = MAIN_MENU;
+                this.nextBoardId = -1; // -1表示任意选择
+                this.boardWinners = new Array(9).fill(null);
+                this.winBoardWinners = new Array(9).fill(null);
+                this.gameVersion = VERSION_BASIC; // 默认基础版
+                
+                // 初始化UI元素引用
+                this.initElements();
+                // 初始化事件监听器
+                this.initEventListeners();
+                // 初始化棋盘
+                this.initBoards();
+                // 初始化胜负棋盘
+                this.initWinBoard();
+                // 显示主菜单
+                this.showMainMenu();
+            }
+            
+            initElements() {
+                // 菜单元素
+                this.mainMenu = document.getElementById('mainMenu');
+                this.versionSelector = document.getElementById('versionSelector');
+                this.rulesScreen = document.getElementById('rulesScreen');
+                this.gameScreen = document.getElementById('gameScreen');
+                this.gameOverModal = document.getElementById('gameOverModal');
+                
+                // 版本选择元素
+                this.basicVersionCard = document.getElementById('basicVersionCard');
+                this.advancedVersionCard = document.getElementById('advancedVersionCard');
+                this.confirmVersionBtn = document.getElementById('confirmVersionBtn');
+                this.backToMainBtn = document.getElementById('backToMainBtn');
+                this.versionIndicator = document.getElementById('versionIndicator');
+                
+                // 按钮元素
+                this.startGameBtn = document.getElementById('startGameBtn');
+                this.rulesBtn = document.getElementById('rulesBtn');
+                this.exitBtn = document.getElementById('exitBtn');
+                this.backToMenuBtn = document.getElementById('backToMenuBtn');
+                this.restartGameBtn = document.getElementById('restartGameBtn');
+                this.changeVersionBtn = document.getElementById('changeVersionBtn');
+                this.returnToMenuBtn = document.getElementById('returnToMenuBtn');
+                this.playAgainBtn = document.getElementById('playAgainBtn');
+                this.changeVersionAfterGameBtn = document.getElementById('changeVersionAfterGameBtn');
+                this.returnToMenuFromModalBtn = document.getElementById('returnToMenuFromModalBtn');
+                
+                // 游戏元素
+                this.gameStatus = document.getElementById('gameStatus');
+                this.boardsContainer = document.getElementById('boardsContainer');
+                this.winBoardElement = document.getElementById('winBoard');
+                this.gameOverMessage = document.getElementById('gameOverMessage');
+                this.playerXInfo = document.getElementById('playerXInfo');
+                this.playerOInfo = document.getElementById('playerOInfo');
+                this.gameSubtitle = document.getElementById('gameSubtitle');
+            }
+            
+            initEventListeners() {
+                // 菜单按钮事件
+                this.startGameBtn.addEventListener('click', () => this.showVersionSelect());
+                this.rulesBtn.addEventListener('click', () => this.showRules());
+                this.exitBtn.addEventListener('click', () => {
+                    if (confirm('确定要退出游戏吗？')) {
+                        window.close();
+                    }
+                });
+                
+                // 版本选择事件
+                this.basicVersionCard.addEventListener('click', () => this.selectVersion(VERSION_BASIC));
+                this.advancedVersionCard.addEventListener('click', () => this.selectVersion(VERSION_ADVANCED));
+                this.confirmVersionBtn.addEventListener('click', () => this.startGame());
+                this.backToMainBtn.addEventListener('click', () => this.showMainMenu());
+                this.backToMenuBtn.addEventListener('click', () => this.showMainMenu());
+                
+                // 游戏按钮事件
+                this.restartGameBtn.addEventListener('click', () => this.restartGame());
+                this.changeVersionBtn.addEventListener('click', () => this.showVersionSelect());
+                this.returnToMenuBtn.addEventListener('click', () => this.showMainMenu());
+                this.playAgainBtn.addEventListener('click', () => {
+                    this.gameOverModal.classList.add('hidden');
+                    this.restartGame();
+                });
+                this.changeVersionAfterGameBtn.addEventListener('click', () => {
+                    this.gameOverModal.classList.add('hidden');
+                    this.showVersionSelect();
+                });
+                this.returnToMenuFromModalBtn.addEventListener('click', () => {
+                    this.gameOverModal.classList.add('hidden');
+                    this.showMainMenu();
+                });
+            }
+            
+            initBoards() {
+                // 初始化9个普通九宫格
+                this.boards = [];
+                for (let boardId = 0; boardId < 9; boardId++) {
+                    const board = [];
+                    for (let row = 0; row < 3; row++) {
+                        const boardRow = [];
+                        for (let col = 0; col < 3; col++) {
+                            boardRow.push('');
+                        }
+                        board.push(boardRow);
+                    }
+                    this.boards.push(board);
+                }
+            }
+            
+            initWinBoard() {
+                // 初始化胜负九宫格
+                this.winBoard = [];
+                for (let row = 0; row < 3; row++) {
+                    const boardRow = [];
+                    for (let col = 0; col < 3; col++) {
+                        boardRow.push('');
+                    }
+                    this.winBoard.push(boardRow);
+                }
+            }
+            
+            selectVersion(version) {
+                this.gameVersion = version;
+                
+                // 更新UI选择状态
+                this.basicVersionCard.classList.remove('selected');
+                this.advancedVersionCard.classList.remove('selected');
+                
+                if (version === VERSION_BASIC) {
+                    this.basicVersionCard.classList.add('selected');
+                } else {
+                    this.advancedVersionCard.classList.add('selected');
+                }
+            }
+            
+            renderBoards() {
+                this.boardsContainer.innerHTML = '';
+                
+                for (let boardId = 0; boardId < 9; boardId++) {
+                    const boardWrapper = document.createElement('div');
+                    boardWrapper.className = 'board-wrapper';
+                    boardWrapper.dataset.boardId = boardId;
+                    
+                    // 高亮下一个需要落子的九宫格
+                    if (this.nextBoardId === boardId && this.gameState === PLAYING) {
+                        boardWrapper.classList.add('active');
+                    }
+                    
+                    const boardTitle = document.createElement('div');
+                    boardTitle.className = 'board-title';
+                    boardTitle.textContent = `九宫格 ${boardId}`;
+                    boardWrapper.appendChild(boardTitle);
+                    
+                    // 如果九宫格已有胜者，显示胜者标记
+                    if (this.boardWinners[boardId]) {
+                        const winnerOverlay = document.createElement('div');
+                        winnerOverlay.className = `board-winner-overlay board-winner-${this.boardWinners[boardId].toLowerCase()}`;
+                        winnerOverlay.textContent = this.boardWinners[boardId];
+                        boardWrapper.appendChild(winnerOverlay);
+                    }
+                    
+                    const boardElement = document.createElement('div');
+                    boardElement.className = 'board';
+                    
+                    for (let row = 0; row < 3; row++) {
+                        const boardRow = document.createElement('div');
+                        boardRow.className = 'board-row';
+                        
+                        for (let col = 0; col < 3; col++) {
+                            const cell = document.createElement('div');
+                            cell.className = 'cell';
+                            cell.dataset.boardId = boardId;
+                            cell.dataset.row = row;
+                            cell.dataset.col = col;
+                            
+                            // 如果该位置已有棋子
+                            if (this.boards[boardId][row][col]) {
+                                cell.textContent = this.boards[boardId][row][col];
+                                cell.classList.add(this.boards[boardId][row][col].toLowerCase());
+                                cell.classList.add('disabled');
+                            } else {
+                                // 如果游戏进行中且该九宫格可落子，添加点击事件
+                                if (this.gameState === PLAYING && 
+                                    (this.nextBoardId === -1 || this.nextBoardId === boardId)) {
+                                    // 基础版：如果九宫格已有胜者，不能落子
+                                    if (this.gameVersion === VERSION_BASIC && this.boardWinners[boardId]) {
+                                        cell.classList.add('disabled');
+                                    } else {
+                                        cell.addEventListener('click', (e) => this.makeMove(boardId, row, col));
+                                    }
+                                } else {
+                                    cell.classList.add('disabled');
+                                }
+                            }
+                            
+                            boardRow.appendChild(cell);
+                        }
+                        
+                        boardElement.appendChild(boardRow);
+                    }
+                    
+                    boardWrapper.appendChild(boardElement);
+                    this.boardsContainer.appendChild(boardWrapper);
+                }
+            }
+            
+            renderWinBoard() {
+                this.winBoardElement.innerHTML = '';
+                
+                for (let row = 0; row < 3; row++) {
+                    const winBoardRow = document.createElement('div');
+                    winBoardRow.className = 'win-board-row';
+                    
+                    for (let col = 0; col < 3; col++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'win-cell';
+                        
+                        if (this.winBoard[row][col]) {
+                            cell.textContent = this.winBoard[row][col];
+                            cell.classList.add(`win-cell-${this.winBoard[row][col].toLowerCase()}`);
+                        }
+                        
+                        winBoardRow.appendChild(cell);
+                    }
+                    
+                    this.winBoardElement.appendChild(winBoardRow);
+                }
+            }
+            
+            updateGameStatus() {
+                if (this.gameState === PLAYING) {
+                    let statusText = `玩家 ${this.currentPlayer} 的回合`;
+                    
+                    if (this.nextBoardId !== -1) {
+                        statusText += ` - 请在九宫格 ${this.nextBoardId} 中落子`;
+                        // 如果目标九宫格已满，添加提示
+                        if (this.isBoardFull(this.nextBoardId)) {
+                            statusText += ' (该九宫格已满，可任意选择其他九宫格)';
+                        } else if (this.gameVersion === VERSION_BASIC && this.boardWinners[this.nextBoardId]) {
+                            statusText += ` (该九宫格已被${this.boardWinners[this.nextBoardId]}占领，可任意选择其他九宫格)`;
+                        }
+                    } else {
+                        statusText += ' - 可选择任意九宫格';
+                    }
+                    
+                    this.gameStatus.textContent = statusText;
+                    this.gameStatus.className = 'game-status status-playing';
+                    
+                    // 更新玩家高亮
+                    if (this.currentPlayer === 'X') {
+                        this.playerXInfo.classList.add('current-player');
+                        this.playerOInfo.classList.remove('current-player');
+                    } else {
+                        this.playerOInfo.classList.add('current-player');
+                        this.playerXInfo.classList.remove('current-player');
+                    }
+                } else if (this.gameState === X_WON) {
+                    this.gameStatus.textContent = '恭喜玩家 X 获胜！';
+                    this.gameStatus.className = 'game-status status-x-win';
+                    this.showGameOver('玩家 X 获胜！');
+                } else if (this.gameState === O_WON) {
+                    this.gameStatus.textContent = '恭喜玩家 O 获胜！';
+                    this.gameStatus.className = 'game-status status-o-win';
+                    this.showGameOver('玩家 O 获胜！');
+                } else if (this.gameState === DRAW) {
+                    this.gameStatus.textContent = '游戏结束，平局！';
+                    this.gameStatus.className = 'game-status status-draw';
+                    this.showGameOver('游戏结束，平局！');
+                }
+            }
+            
+            showMainMenu() {
+                this.gameState = MAIN_MENU;
+                this.mainMenu.classList.remove('hidden');
+                this.versionSelector.classList.add('hidden');
+                this.rulesScreen.classList.add('hidden');
+                this.gameScreen.classList.add('hidden');
+                this.gameOverModal.classList.add('hidden');
+            }
+            
+            showVersionSelect() {
+                this.gameState = VERSION_SELECT;
+                this.mainMenu.classList.add('hidden');
+                this.versionSelector.classList.remove('hidden');
+                this.rulesScreen.classList.add('hidden');
+                this.gameScreen.classList.add('hidden');
+                this.gameOverModal.classList.add('hidden');
+            }
+            
+            showRules() {
+                this.gameState = SHOW_RULES;
+                this.mainMenu.classList.add('hidden');
+                this.versionSelector.classList.add('hidden');
+                this.rulesScreen.classList.remove('hidden');
+                this.gameScreen.classList.add('hidden');
+                this.gameOverModal.classList.add('hidden');
+            }
+            
+            showGameScreen() {
+                this.mainMenu.classList.add('hidden');
+                this.versionSelector.classList.add('hidden');
+                this.rulesScreen.classList.add('hidden');
+                this.gameScreen.classList.remove('hidden');
+                this.gameOverModal.classList.add('hidden');
+                
+                // 更新版本指示器
+                this.versionIndicator.textContent = this.gameVersion === VERSION_BASIC ? '基础版' : '进阶版';
+                this.versionIndicator.className = `version-indicator ${this.gameVersion}`;
+                
+                // 更新副标题
+                if (this.gameVersion === VERSION_BASIC) {
+                    this.gameSubtitle.textContent = '胜负九宫格连成三子即可获胜（基础版）';
+                } else {
+                    this.gameSubtitle.textContent = '胜负九宫格连成三子即可获胜（进阶版：占领后仍可落子）';
+                }
+            }
+            
+            showGameOver(message) {
+                this.gameOverMessage.textContent = message;
+                this.gameOverModal.classList.remove('hidden');
+            }
+            
+            startGame() {
+                // 如果没有选择版本，默认基础版
+                if (!this.gameVersion) {
+                    this.gameVersion = VERSION_BASIC;
+                }
+                
+                // 重置游戏状态
+                this.gameState = PLAYING;
+                this.currentPlayer = 'X';
+                this.nextBoardId = -1;
+                this.boardWinners = new Array(9).fill(null);
+                this.winBoardWinners = new Array(9).fill(null);
+                
+                // 初始化棋盘
+                this.initBoards();
+                this.initWinBoard();
+                
+                // 显示游戏界面
+                this.showGameScreen();
+                
+                // 更新UI
+                this.renderBoards();
+                this.renderWinBoard();
+                this.updateGameStatus();
+                
+                console.log(`=== 新游戏开始 === 版本: ${this.gameVersion}`);
+                console.log(`规则说明: ${this.gameVersion === VERSION_BASIC ? '九宫格被占领后不能落子' : '九宫格被占领后仍可落子'}`);
+            }
+            
+            restartGame() {
+                this.startGame();
+            }
+            
+            makeMove(boardId, row, col) {
+                console.log(`\n=== 尝试落子 ===`);
+                console.log(`版本: ${this.gameVersion}`);
+                console.log(`玩家: ${this.currentPlayer}`);
+                console.log(`目标九宫格: ${boardId}`);
+                console.log(`位置: (${row}, ${col})`);
+                console.log(`下一个九宫格限制: ${this.nextBoardId}`);
+                console.log(`九宫格${boardId}已有胜者: ${this.boardWinners[boardId]}`);
+                
+                // 验证移动是否有效
+                if (!this.isValidMove(boardId, row, col)) {
+                    console.log('落子无效');
+                    return;
+                }
+                
+                // 执行移动
+                this.boards[boardId][row][col] = this.currentPlayer;
+                console.log(`落子成功: 在九宫格${boardId}的(${row},${col})位置放置${this.currentPlayer}`);
+                
+                // 检查该九宫格是否有胜者（只有当该九宫格还没有胜者时才检查）
+                if (!this.boardWinners[boardId]) {
+                    const hasWinner = this.checkBoardWin(boardId, this.currentPlayer);
+                    if (hasWinner) {
+                        console.log(`九宫格${boardId}产生胜者: ${this.currentPlayer}`);
+                        this.boardWinners[boardId] = this.currentPlayer;
+                        
+                        // 更新胜负判定九宫格
+                        this.updateWinBoard(boardId);
+                        
+                        // 检查胜负判定九宫格是否有胜者
+                        const winBoardWinner = this.checkWinBoardWin();
+                        if (winBoardWinner) {
+                            console.log(`胜负判定九宫格有胜者: ${winBoardWinner}`);
+                            this.gameState = winBoardWinner === 'X' ? X_WON : O_WON;
+                            this.updateGameStatus();
+                            return;
+                        }
+                    }
+                }
+                
+                // 计算下一个九宫格
+                this.nextBoardId = row * 3 + col;
+                console.log(`计算下一个九宫格: 当前落子位置(${row},${col}) -> 下一个九宫格: ${this.nextBoardId}`);
+                
+                // 如果计算出的下一个九宫格已满，则设置为任意选择
+                // 基础版：如果九宫格已有胜者，也设置为任意选择
+                if (this.nextBoardId !== -1) {
+                    if (this.isBoardFull(this.nextBoardId)) {
+                        console.log(`下一个九宫格${this.nextBoardId}已满，设置为任意选择`);
+                        this.nextBoardId = -1;
+                    } else if (this.gameVersion === VERSION_BASIC && this.boardWinners[this.nextBoardId]) {
+                        console.log(`下一个九宫格${this.nextBoardId}已被占领（基础版），设置为任意选择`);
+                        this.nextBoardId = -1;
+                    }
+                }
+                
+                // 检查游戏是否结束（平局情况）
+                if (this.isGameDraw()) {
+                    console.log('所有九宫格都已满，平局');
+                    this.gameState = DRAW;
+                    this.updateGameStatus();
+                    return;
+                }
+                
+                // 切换玩家
+                this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
+                console.log(`切换玩家，下一个回合: 玩家${this.currentPlayer}在九宫格${this.nextBoardId}落子`);
+                
+                // 更新UI
+                this.renderBoards();
+                this.renderWinBoard();
+                this.updateGameStatus();
+            }
+            
+            isValidMove(boardId, row, col) {
+                if (this.gameState !== PLAYING) {
+                    return false;
+                }
+                
+                // 检查是否在正确的九宫格中落子
+                if (this.nextBoardId !== -1 && boardId !== this.nextBoardId) {
+                    console.log(`必须在九宫格${this.nextBoardId}中落子，但选择了九宫格${boardId}`);
+                    return false;
+                }
+                
+                // 检查位置是否已被占用
+                if (this.boards[boardId][row][col] !== '') {
+                    console.log(`位置(${row},${col})已被占用`);
+                    return false;
+                }
+                
+                // 基础版：检查九宫格是否已有胜者
+                if (this.gameVersion === VERSION_BASIC && this.boardWinners[boardId]) {
+                    console.log(`基础版规则：九宫格${boardId}已有胜者${this.boardWinners[boardId]}，不能落子`);
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            checkBoardWin(boardId, player) {
+                const board = this.boards[boardId];
+                
+                // 检查行
+                for (let row = 0; row < 3; row++) {
+                    if (board[row][0] === player && 
+                        board[row][1] === player && 
+                        board[row][2] === player) {
+                        return true;
+                    }
+                }
+                
+                // 检查列
+                for (let col = 0; col < 3; col++) {
+                    if (board[0][col] === player && 
+                        board[1][col] === player && 
+                        board[2][col] === player) {
+                        return true;
+                    }
+                }
+                
+                // 检查对角线
+                if (board[0][0] === player && 
+                    board[1][1] === player && 
+                    board[2][2] === player) {
+                    return true;
+                }
+                
+                if (board[0][2] === player && 
+                    board[1][1] === player && 
+                    board[2][0] === player) {
+                    return true;
+                }
+                
+                return false;
+            }
+            
+            updateWinBoard(boardId) {
+                const winBoardRow = Math.floor(boardId / 3);
+                const winBoardCol = boardId % 3;
+                
+                // 只更新一次
+                if (this.winBoard[winBoardRow][winBoardCol] === '') {
+                    this.winBoard[winBoardRow][winBoardCol] = this.boardWinners[boardId];
+                    console.log(`更新胜负九宫格: 九宫格${boardId} -> 位置(${winBoardRow},${winBoardCol}) 标记:${this.boardWinners[boardId]}`);
+                } else {
+                    console.log(`胜负九宫格位置(${winBoardRow},${winBoardCol})已有标记，不再重复标记`);
+                }
+            }
+            
+            checkWinBoardWin() {
+                // 检查行
+                for (let row = 0; row < 3; row++) {
+                    if (this.winBoard[row][0] && 
+                        this.winBoard[row][0] === this.winBoard[row][1] && 
+                        this.winBoard[row][1] === this.winBoard[row][2]) {
+                        return this.winBoard[row][0];
+                    }
+                }
+                
+                // 检查列
+                for (let col = 0; col < 3; col++) {
+                    if (this.winBoard[0][col] && 
+                        this.winBoard[0][col] === this.winBoard[1][col] && 
+                        this.winBoard[1][col] === this.winBoard[2][col]) {
+                        return this.winBoard[0][col];
+                    }
+                }
+                
+                // 检查对角线
+                if (this.winBoard[0][0] && 
+                    this.winBoard[0][0] === this.winBoard[1][1] && 
+                    this.winBoard[1][1] === this.winBoard[2][2]) {
+                    return this.winBoard[0][0];
+                }
+                
+                if (this.winBoard[0][2] && 
+                    this.winBoard[0][2] === this.winBoard[1][1] && 
+                    this.winBoard[1][1] === this.winBoard[2][0]) {
+                    return this.winBoard[0][2];
+                }
+                
+                return null;
+            }
+            
+            isBoardFull(boardId) {
+                const board = this.boards[boardId];
+                for (let row = 0; row < 3; row++) {
+                    for (let col = 0; col < 3; col++) {
+                        if (board[row][col] === '') {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+            
+            isGameDraw() {
+                // 检查是否所有九宫格都已满
+                for (let boardId = 0; boardId < 9; boardId++) {
+                    if (!this.isBoardFull(boardId)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        
+        // 页面加载完成后初始化游戏
+        document.addEventListener('DOMContentLoaded', () => {
+            const game = new UltimateTicTacToe();
+        });
+    </script>
+</body>
+</html>
