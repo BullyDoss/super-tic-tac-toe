@@ -84,3 +84,12 @@ SuperTicTacToe/
 
 访问 GitHub Pages 即可在线游玩：
 [https://bullydoss.github.io/super-tic-tac-toe](https://bullydoss.github.io/super-tic-tac-toe)
+
+
+## 预览效果
+
+主菜单：
+<img width="1045" height="691" alt="image" src="https://github.com/user-attachments/assets/8f8dbab6-158c-42c5-b755-594a13ad8b45" />
+对战：
+<img width="1088" height="762" alt="image" src="https://github.com/user-attachments/assets/05fa83a1-c504-4947-ac18-96e9757bdb20" />
+
